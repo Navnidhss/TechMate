@@ -292,7 +292,7 @@ npm run dev              # http://localhost:3000
 - **Tracking:** valid code returns status/customer note/time; response keys are exactly the four allowed fields; lowercase input normalises; malformed and unknown codes produce friendly generic errors; the 6th lookup in the window is rate-limited.
 - **Build / lint:** `npm run build` clean, ESLint clean.
 - **Security checklist:** all §11 items pass — public actions rate-limited and validated, bcrypt + forced password change, signed HttpOnly/SameSite/Secure cookie, `/admin` doubly protected, generic login and tracking failures, parameterised Prisma only, no committed secrets, consent enforced, all admin actions re-verify the session, admin pages noindexed.
-- Test job and all test data removed; database left with only seeded content and the starter admin.
+- Test job and automated test data removed. One manually entered booking/job (TM-EQKSZA) from the owner's own trial remains in the database and was deliberately left untouched.
 
 ### 12.3 Decisions & deviations
 

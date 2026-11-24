@@ -80,7 +80,7 @@ Plan target was ≥ 90 performance and accessibility on home — exceeded.
 ### Other checks
 - `npm run build` ✅ 0 errors; `npx eslint src prisma` ✅ clean.
 - All public routes and admin routes still render; 404 page unchanged in behaviour.
-- Test job created for tracking verification was deleted; database left with no customer data.
+- The test job created for tracking verification was deleted. One manually entered booking and job (TM-EQKSZA) from the owner's own trial remain in the database and were deliberately left in place.
 
 ## Deviations / Notes
 

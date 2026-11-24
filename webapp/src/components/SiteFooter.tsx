@@ -31,16 +31,16 @@ export async function SiteFooter() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-ink">Services</h3>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-4 space-y-1 text-sm">
             {services.slice(0, 6).map((service) => (
               <li key={service.id}>
-                <Link href={`/services/${service.slug}`} className="transition-colors hover:text-primary">
+                <Link href={`/services/${service.slug}`} className="inline-block py-1 transition-colors hover:text-primary">
                   {service.name}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/services" className="font-semibold text-primary hover:text-primary-dark">
+              <Link href="/services" className="inline-block py-1 font-semibold text-primary hover:text-primary-dark">
                 See all services →
               </Link>
             </li>
@@ -49,7 +49,7 @@ export async function SiteFooter() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-ink">Quick links</h3>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-4 space-y-1 text-sm">
             {[
               { href: "/pricing", label: "Pricing" },
               { href: "/service-areas", label: "Service areas" },
@@ -61,7 +61,7 @@ export async function SiteFooter() {
               { href: "/privacy", label: "Privacy" },
             ].map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="transition-colors hover:text-primary">
+                <Link href={link.href} className="inline-block py-1 transition-colors hover:text-primary">
                   {link.label}
                 </Link>
               </li>
@@ -73,13 +73,13 @@ export async function SiteFooter() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-ink">Get in touch</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={`mailto:${settings.contactEmail}`} className="flex items-start gap-2.5 hover:text-primary">
+              <a href={`mailto:${settings.contactEmail}`} className="flex items-start gap-2.5 py-1 hover:text-primary">
                 <Icon name="mail" size={17} className="mt-0.5 shrink-0 text-primary" />
                 <span className="break-all">{settings.contactEmail}</span>
               </a>
             </li>
             <li>
-              <a href={telHref} className="flex items-start gap-2.5 hover:text-primary">
+              <a href={telHref} className="flex items-start gap-2.5 py-1 hover:text-primary">
                 <Icon name="phone" size={17} className="mt-0.5 shrink-0 text-primary" />
                 {settings.contactPhone}
               </a>

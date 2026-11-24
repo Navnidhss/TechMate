@@ -1,0 +1,13 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local tooling
+.vscode/
+.idea/
+
+# The app has its own .gitignore (webapp/.gitignore) for node_modules,
+# .next, .env and the SQLite database.

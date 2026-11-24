@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SiteSetting {
+  key   String @id // e.g. "contactEmail"
+  value String
+}
+
+model Service {
+  id          Int     @id @default(autoincrement())
+  slug        String  @unique
+  name        String
+  shortDesc   String // card summary, <= 140 chars
+  description String // detail page body, plain paragraphs (\n\n separated)
+  delivery    String // CSV of: onsite, remote, workshop
+  priceFrom   String? // e.g. "From $89" — free text, customer-facing
+  priceNotes  String? // e.g. "Free quote before any work begins."
+  icon        String? // key into a small built-in icon map in code
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+}
+
+model Faq {
+  id        Int    @id @default(autoincrement())
+  question  String
+  answer    String
+  sortOrder Int    @default(0)
+}
+
+model ServiceArea {
+  id        Int    @id @default(autoincrement())
+  zone      String // e.g. "Northern Suburbs"
+  suburb    String
+  sortOrder Int    @default(0)
+
+  @@unique([zone, suburb])
+}
+
+model BookingRequest {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String
+  phone         String
+  suburb        String
+  serviceSlug   String
+  delivery      String // onsite | remote | workshop
+  preferredDate String? // YYYY-MM-DD, optional
+  preferredTime String // morning | afternoon | evening | flexible
+  address       String?
+  notes         String
+  status        String   @default("new")
+  createdAt     DateTime @default(now())
+
+  job Job?
+}
+
+model Enquiry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model QuoteRequest {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  details   String
+  budget    String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model DataRecoveryIntake {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String
+  deviceType String // desktop / laptop / external drive / phone / other
+  deviceMake String?
+  importance String // critical | important | nice-to-have
+  symptoms   String
+  tampered   Boolean // "already opened / attempted recovery?"
+  consent    Boolean // accepted data-handling terms
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+}
+
+model RemoteSupportRequest {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  issue     String
+  urgency   String // asap | today | this-week
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model Job {
+  id             Int             @id @default(autoincrement())
+  reference      String          @unique // TM-XXXXXX, see §7.4
+  customerName   String
+  customerEmail  String
+  customerPhone  String?
+  suburb         String?
+  serviceSummary String
+  status         String          @default("received") // see lib/statuses.ts
+  statusNote     String // CUSTOMER-VISIBLE note
+  adminNote      String // internal only
+  bookingId      Int?            @unique
+  booking        BookingRequest? @relation(fields: [bookingId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model AdminUser {
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  createdAt          DateTime @default(now())
+}

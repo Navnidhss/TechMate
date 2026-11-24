@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens — the single source of colour/typography for the site.
+   Tailwind 4 reads these and generates utilities (bg-primary, text-ink, …).
+   --------------------------------------------------------------- */
+@theme {
+  --color-primary: #0f766e; /* deep teal */
+  --color-primary-dark: #115e59;
+  --color-primary-light: #14b8a6;
+  --color-accent: #f59e0b; /* warm amber */
+  --color-accent-dark: #b45309;
+  --color-ink: #1e293b; /* headings */
+  --color-body: #475569; /* body text */
+  --color-muted: #64748b;
+  --color-surface: #f8fafc; /* page background */
+  --color-card: #ffffff;
+  --color-line: #e2e8f0;
+  --color-success: #059669;
+  --color-danger: #dc2626;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-inter), ui-sans-serif, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface font-sans text-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold text-ink;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: #99f6e4;
+    color: #134e4a;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* Page width + gutters — used on every section. */
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+
+  .section {
+    @apply py-16;
+  }
+
+  .card {
+    @apply rounded-2xl border border-line bg-card shadow-sm;
+  }
+
+  /* Buttons — base utilities are shared, colours added per variant. */
+  .btn,
+  .btn-primary,
+  .btn-accent,
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-colors duration-150 sm:text-base;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white hover:bg-accent-dark;
+  }
+
+  .btn-outline {
+    @apply border border-line bg-card text-ink hover:border-primary/40 hover:text-primary;
+  }
+
+  .btn-small {
+    @apply rounded-lg px-3 py-1.5 text-xs;
+  }
+
+  /* Rounded delivery badges (Onsite / Remote / Workshop) */
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary-dark;
+  }
+
+  /* Forms */
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-ink;
+  }
+
+  .field-hint {
+    @apply mt-1 text-xs text-muted;
+  }
+
+  .field-error {
+    @apply mt-1 text-xs font-medium text-danger;
+  }
+
+  .input,
+  .textarea,
+  .select {
+    @apply w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none transition-colors placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  .textarea {
+    @apply min-h-32 resize-y;
+  }
+
+  /* Soft teal glow used behind the hero (pure CSS, no images). */
+  .hero-glow {
+    background-image:
+      radial-gradient(48rem 28rem at 78% 0%, rgb(20 184 166 / 0.16), transparent 70%),
+      radial-gradient(38rem 24rem at 5% 20%, rgb(245 158 11 / 0.08), transparent 65%);
+  }
+
+  /* The thin amber underline bar under section headings. */
+  .heading-bar {
+    @apply mt-3 h-1 w-14 rounded-full bg-accent;
+  }
+
+  /* Plain-content paragraphs rendered from DB strings (split on \n\n). */
+  .prose-plain p {
+    @apply mb-4 text-base leading-relaxed text-body last:mb-0;
+  }
+}

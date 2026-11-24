@@ -9,6 +9,14 @@ export interface SiteSettings {
   anydeskInfo: string;
   workshopAddress: string;
   abn: string;
+  // Scheduling (stored as strings; parse numbers where needed)
+  schedDays: string; // CSV of 1-7, Monday=1
+  schedStart: string; // HH:MM Perth
+  schedEnd: string; // HH:MM Perth
+  schedHorizonDays: string;
+  schedNoticeHours: string;
+  schedBufferMinutes: string;
+  schedPolicyNote: string;
 }
 
 /**
@@ -26,6 +34,14 @@ const DEFAULTS: SiteSettings = {
     "Download AnyDesk from anydesk.com, then send us your 9-digit ID and we'll connect.",
   workshopAddress: "Drop-off available across Perth metro — address confirmed when you book.",
   abn: "",
+  schedDays: "1,2,3,4,5,6",
+  schedStart: "08:00",
+  schedEnd: "18:00",
+  schedHorizonDays: "30",
+  schedNoticeHours: "2",
+  schedBufferMinutes: "30",
+  schedPolicyNote:
+    "Life happens — cancel any time with the link in your confirmation email. Please give us a heads-up if you can.",
 };
 
 const KNOWN_KEYS = Object.keys(DEFAULTS) as (keyof SiteSettings)[];

@@ -17,11 +17,16 @@ interface RecentItem {
 }
 
 export default async function AdminDashboardPage() {
-  const [newBookings, newEnquiries, newRecoveries, activeJobs] = await Promise.all([
+  const now = new Date();
+  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const [newBookings, newEnquiries, newRecoveries, activeJobs, upcomingAppointments] = await Promise.all([
     prisma.bookingRequest.count({ where: { status: "new" } }),
     prisma.enquiry.count({ where: { status: "new" } }),
     prisma.dataRecoveryIntake.count({ where: { status: "new" } }),
     prisma.job.count({ where: { status: { notIn: ["completed", "cancelled"] } } }),
+    prisma.appointment.count({
+      where: { status: "booked", startsAt: { gte: now, lte: nextWeek } },
+    }),
   ]);
 
   const [bookings, enquiries, quotes, recoveries, remote] = await Promise.all([
@@ -82,6 +87,12 @@ export default async function AdminDashboardPage() {
     { label: "New enquiries", value: newEnquiries, href: "/admin/enquiries", tone: "text-sky-700" },
     { label: "New recoveries", value: newRecoveries, href: "/admin/recoveries", tone: "text-accent-dark" },
     { label: "Active jobs", value: activeJobs, href: "/admin/jobs", tone: "text-emerald-700" },
+    {
+      label: "Appointments (7 days)",
+      value: upcomingAppointments,
+      href: "/admin/appointments",
+      tone: "text-accent-dark",
+    },
   ];
 
   return (
@@ -93,7 +104,7 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {counts.map((card) => (
           <Link
             key={card.label}
@@ -145,6 +156,8 @@ export default async function AdminDashboardPage() {
             <div className="mt-3 grid gap-1.5 text-sm">
               {[
                 { href: "/admin/jobs", label: "Manage jobs and tracking codes" },
+                { href: "/admin/appointments", label: "See live appointments" },
+                { href: "/admin/calendar", label: "Connect Google Calendar / add days off" },
                 { href: "/admin/content/services", label: "Edit services and prices" },
                 { href: "/admin/content/faq", label: "Edit the FAQs" },
                 { href: "/admin/content/areas", label: "Edit suburbs we cover" },

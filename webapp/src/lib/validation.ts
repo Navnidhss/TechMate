@@ -213,6 +213,12 @@ export const serviceSchema = z.object({
   priceFrom: z.string().trim().max(40, "That price is a little too long"),
   priceNotes: z.string().trim().max(300, "That note is a little too long"),
   icon: z.string().trim().max(40),
+  durationMinutes: z.coerce
+    .number()
+    .int("Duration must be a whole number of minutes")
+    .min(15, "Duration must be at least 15 minutes")
+    .max(240, "Duration must be 4 hours or less")
+    .refine((value) => value % 15 === 0, "Use 15-minute steps (15, 30, 45…)"),
   sortOrder: z.coerce.number().int().min(0).max(9999),
 });
 
@@ -241,4 +247,57 @@ export const settingsSchema = z.object({
   anydeskInfo: z.string().trim().min(5, "Please add the AnyDesk instructions").max(400, "That's a little too long"),
   workshopAddress: z.string().trim().min(2, "Please add your workshop / drop-off details").max(300, "That's a little too long"),
   abn: z.string().trim().max(30, "That ABN looks a little long"),
+
+  schedDays: z
+    .string()
+    .trim()
+    .regex(/^[1-7](,[1-7])*$/, "Use numbers 1–7 separated by commas (1 = Monday)"),
+  schedStart: z
+    .string()
+    .trim()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use a time like 08:00"),
+  schedEnd: z
+    .string()
+    .trim()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use a time like 18:00"),
+  schedHorizonDays: z.coerce.number().int().min(1, "At least 1 day").max(365, "365 days is the maximum"),
+  schedNoticeHours: z.coerce.number().int().min(0, "Cannot be negative").max(72, "72 hours is the maximum"),
+  schedBufferMinutes: z.coerce.number().int().min(0, "Cannot be negative").max(120, "120 minutes is the maximum"),
+  schedPolicyNote: z
+    .string()
+    .trim()
+    .min(5, "Please add a short cancellation note")
+    .max(500, "That note is a little too long"),
 });
+
+/** New appointment (live scheduler booking). */
+export const appointmentSchema = z.object({
+  name,
+  email,
+  phone,
+  suburb,
+  serviceSlug: z.string().trim().min(1, "Please choose a service"),
+  delivery: z.enum(DELIVERY_OPTIONS, { message: "Please choose how you'd like us to help" }),
+  date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Please choose a day"),
+  slot: z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Please choose a time"),
+  address: optional(z.string().trim().max(200, "That address is a little too long")),
+  notes: optional(z.string().trim().max(5000, "That's a little long for us to read — please shorten it")),
+});
+
+/** Admin availability block. */
+export const scheduleBlockSchema = z
+  .object({
+    date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Please choose a date"),
+    allDay: z.preprocess((value) => value === "on" || value === "true" || value === true, z.boolean()),
+    startTime: optional(z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use a time like 09:00")),
+    endTime: optional(z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use a time like 12:00")),
+    reason: z.string().trim().max(120, "That reason is a little too long"),
+  })
+  .refine(
+    (data) => data.allDay || (Boolean(data.startTime) && Boolean(data.endTime)),
+    { message: "Add a start and end time, or choose all day", path: ["startTime"] },
+  )
+  .refine((data) => data.allDay || (data.startTime ?? "") < (data.endTime ?? ""), {
+    message: "The end time needs to be after the start time",
+    path: ["endTime"],
+  });

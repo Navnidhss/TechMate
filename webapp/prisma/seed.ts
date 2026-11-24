@@ -33,6 +33,7 @@ async function main() {
         priceFrom: service.priceFrom ?? null,
         priceNotes: service.priceNotes ?? null,
         icon: service.icon ?? null,
+        durationMinutes: service.durationMinutes ?? 60,
         sortOrder: service.sortOrder,
         active: true,
       },

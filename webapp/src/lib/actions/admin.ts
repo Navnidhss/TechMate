@@ -5,12 +5,13 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/db";
 import { sendJobUpdateEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
 import { uniqueJobReference } from "@/lib/reference";
 import { getClientIp } from "@/lib/request";
-import { COOKIE_NAME, createSessionToken, verifySessionToken } from "@/lib/session";
+import { COOKIE_NAME, createSessionToken } from "@/lib/session";
 import {
   BOOKING_STATUSES,
   DELIVERY_OPTIONS,
@@ -46,20 +47,6 @@ function safeNext(value: FormDataEntryValue | null): string | null {
   return typeof value === "string" && value.startsWith("/admin") && !value.startsWith("/admin/login")
     ? value
     : null;
-}
-
-/**
- * Every admin action calls this first. The middleware guards page navigation,
- * but actions are callable directly, so they must verify the session too.
- */
-async function requireAdmin(): Promise<number> {
-  const token = (await cookies()).get(COOKIE_NAME)?.value;
-  const uid = verifySessionToken(token);
-  if (uid === null) redirect("/admin/login");
-
-  const user = await prisma.adminUser.findUnique({ where: { id: uid } });
-  if (!user) redirect("/admin/login");
-  return uid;
 }
 
 /* ------------------------------------------------------------------ */
@@ -328,6 +315,7 @@ export async function saveService(formData: FormData): Promise<void> {
     priceFrom: parsed.data.priceFrom || null,
     priceNotes: parsed.data.priceNotes || null,
     icon: parsed.data.icon || null,
+    durationMinutes: parsed.data.durationMinutes,
     sortOrder: parsed.data.sortOrder,
   };
 
@@ -468,10 +456,11 @@ export async function saveSettings(formData: FormData): Promise<void> {
   }
 
   for (const [key, value] of Object.entries(parsed.data)) {
+    const stored = String(value);
     await prisma.siteSetting.upsert({
       where: { key },
-      update: { value },
-      create: { key, value },
+      update: { value: stored },
+      create: { key, value: stored },
     });
   }
 

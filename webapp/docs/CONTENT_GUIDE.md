@@ -39,6 +39,8 @@ The left menu has one page for each kind of request:
 | **Quotes** | Requests for a price |
 | **Recoveries** | Data recovery intake forms |
 | **Remote** | AnyDesk / remote support requests |
+| **Appointments** | Live bookings made through the scheduler (real times in your calendar) |
+| **Calendar** | Connect Google Calendar, block days/times off, and force a sync |
 
 Each request shows the person's name, contact details, a summary, and a **status dropdown**.
 
@@ -58,7 +60,39 @@ day/time and address.
 
 ---
 
-## 4. Turning a booking into a job (with a tracking code)
+## 4. Live bookings (appointments)
+
+Customers can also book a real time slot at **Book now** on the website:
+
+1. They pick a service, how they'd like help, a day and a time, then their details.
+2. The slot is booked instantly — no confirmation step. They get a reference and a confirmation email
+   with a link to change or cancel.
+3. The booking appears under **Appointments** in admin, and in your Google Calendar once it's
+   connected.
+
+### Cancelling an appointment
+
+- **You:** open **Appointments**, find the booking and press **Cancel booking**. The customer is
+  emailed and the time becomes bookable again immediately.
+- **The customer:** they use the cancel link in their confirmation email. You're emailed automatically.
+- **Via Google:** if you delete the event in Google Calendar, the website notices within about five
+  minutes (or press **Sync now** on the Calendar page), cancels the booking and frees the slot.
+- **Changing the time:** don't drag the event in Google. Cancel in admin and ask the customer to
+  rebook — the website keeps the original time otherwise.
+
+### Days off and blocked times
+
+**Calendar → Days off & blocked time** — block a whole day (holiday, family day) or just a window
+(lunch, school pickup). The times disappear from the booking page straight away. Events you add in
+Google Calendar block time as well.
+
+### Google Calendar
+
+See **docs/CALENDAR_SETUP.md** for the one-time setup. Without it, live bookings still work but you
+manage the times yourself and your Google events don't block slots. The Calendar page tells you
+whether it's connected.
+
+## 5. Turning a booking request into a job (with a tracking code)
 
 When you're ready to take on a booking:
 
@@ -73,7 +107,7 @@ shown.
 
 ---
 
-## 5. Updating a job
+## 6. Updating a job
 
 On the job page there are two different notes. This is the important bit:
 
@@ -91,14 +125,16 @@ opening each one.
 
 ---
 
-## 6. Editing your services and prices
+## 7. Editing your services and prices
 
 **Content → Services**
 
 - Press **+ Add a new service** to create one. The "web address name" becomes the page address, e.g.
   `smart-tv-setup` → `/services/smart-tv-setup`. Use lowercase letters, numbers and hyphens.
 - Press **Edit this service** on any service to change its name, card summary, full description,
-  price guide, price note, icon, delivery options and order.
+  price guide, price note, icon, delivery options, **booking length** and order.
+- **Booking length** is how much time the service needs in the live calendar (15–240 minutes, in
+  15-minute steps). Customers see "About 90 minutes" on the booking page.
 - Leave a **blank line** between paragraphs in the description.
 - **Hide from site** removes a service from the public pages without deleting anything. Use this when
   you no longer offer something but want to keep the history.
@@ -110,7 +146,7 @@ Prices are free text, so you can write `From $89`, `$79 per hour`, `Free assessm
 
 ---
 
-## 7. Editing FAQs, service areas and settings
+## 8. Editing FAQs, service areas and settings
 
 ### FAQs
 
@@ -136,11 +172,20 @@ and in the booking form's suggestions.
 - **AnyDesk instructions** — shown on the remote support page.
 - **ABN** — appears in the footer once you add it.
 
+**Live booking availability** (same page):
+
+- **Days you work** — numbers 1–7 (1 = Monday). Default 1,2,3,4,5,6 = Mon–Sat.
+- **Earliest / latest booking time** — e.g. 08:00 and 18:00. Jobs must finish by the latest time.
+- **Book ahead** — how many days into the future customers can book (default 30).
+- **Minimum notice** — no bookings closer than this to now (default 2 hours).
+- **Break between jobs** — travel/reset time after each booking (default 30 minutes).
+- **Cancellation policy** — the friendly note shown at booking and in confirmation emails.
+
 Press **Save settings** at the bottom. Changes appear immediately.
 
 ---
 
-## 8. What customers see
+## 9. What customers see
 
 - **Service pages** update as soon as you save a service.
 - **Pricing** uses each service's price guide and price note.
@@ -148,10 +193,12 @@ Press **Save settings** at the bottom. Changes appear immediately.
 - **Booking form** offers your active services and suggests your suburbs.
 - **Contact page and footer** use your settings.
 - **Tracking page** shows only a job's status and customer update — never personal details.
+- **Book page** offers live times based on your working hours, existing bookings, Google Calendar
+  events and days off.
 
 ---
 
-## 9. Good habits
+## 10. Good habits
 
 - **Change the starter password immediately.** The temporary login is `admin` /
   `TechMateAdmin2025!` — replace it on first sign-in. Use **Change password** in the sidebar any time.
@@ -166,7 +213,7 @@ Press **Save settings** at the bottom. Changes appear immediately.
 
 ---
 
-## 10. Quick reference
+## 11. Quick reference
 
 | I want to… | Go to |
 |---|---|
@@ -175,6 +222,12 @@ Press **Save settings** at the bottom. Changes appear immediately.
 | Give a customer a tracking code | Bookings → Create job |
 | Tell a customer what's happening | Jobs → open the job → Customer update → Save |
 | Change a price | Content → Services → Edit this service |
+| Change how long a service takes | Content → Services → Booking length |
+| See live bookings | Appointments |
+| Cancel a live booking | Appointments → Cancel booking |
+| Block a day off | Calendar → Days off & blocked time |
+| Connect Google Calendar | Calendar |
+| Change booking hours/notice/buffer | Content → Settings → Live booking availability |
 | Stop offering a service | Content → Services → Hide from site |
 | Add a suburb | Content → Areas |
 | Change where emails go | Content → Settings → Contact email |

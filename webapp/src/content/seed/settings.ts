@@ -26,4 +26,15 @@ export const seedSettings: SeedSetting[] = [
     value: "Drop-off available across Perth metro — address confirmed when you book.",
   },
   { key: "abn", value: "" },
+  { key: "schedDays", value: "1,2,3,4,5,6" },
+  { key: "schedStart", value: "08:00" },
+  { key: "schedEnd", value: "18:00" },
+  { key: "schedHorizonDays", value: "30" },
+  { key: "schedNoticeHours", value: "2" },
+  { key: "schedBufferMinutes", value: "30" },
+  {
+    key: "schedPolicyNote",
+    value:
+      "Life happens — cancel any time with the link in your confirmation email. Please give us a heads-up if you can.",
+  },
 ];

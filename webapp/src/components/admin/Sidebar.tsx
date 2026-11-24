@@ -14,6 +14,8 @@ const MAIN_LINKS = [
   { href: "/admin/recoveries", label: "Recoveries", icon: "drive" },
   { href: "/admin/remote", label: "Remote", icon: "laptop" },
   { href: "/admin/jobs", label: "Jobs", icon: "tool" },
+  { href: "/admin/appointments", label: "Appointments", icon: "calendar" },
+  { href: "/admin/calendar", label: "Calendar", icon: "clock" },
 ];
 
 const CONTENT_LINKS = [

@@ -107,9 +107,16 @@ export default async function AdminServicesContentPage({ searchParams }: Service
             </div>
           </fieldset>
 
-          <div>
-            <label htmlFor="new-sortOrder" className="field-label">Order on the page</label>
-            <input id="new-sortOrder" name="sortOrder" type="number" min={0} max={9999} defaultValue={services.length + 1} className="input max-w-32" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="new-duration" className="field-label">Booking length (minutes)</label>
+              <input id="new-duration" name="durationMinutes" type="number" min={15} max={240} step={15} defaultValue={60} className="input max-w-40" />
+              <p className="field-hint">How long this service needs in the calendar. 15-minute steps.</p>
+            </div>
+            <div>
+              <label htmlFor="new-sortOrder" className="field-label">Order on the page</label>
+              <input id="new-sortOrder" name="sortOrder" type="number" min={0} max={9999} defaultValue={services.length + 1} className="input max-w-32" />
+            </div>
           </div>
 
           <SubmitButton pendingLabel="Adding…">Add service</SubmitButton>
@@ -137,7 +144,7 @@ export default async function AdminServicesContentPage({ searchParams }: Service
                     <span className="text-xs text-muted">#{service.sortOrder}</span>
                   </div>
                   <p className="mt-0.5 text-xs text-muted">
-                    /services/{service.slug} · {service.priceFrom ?? "no price shown"} · {delivery.join(", ")}
+                    /services/{service.slug} · {service.priceFrom ?? "no price shown"} · {service.durationMinutes} min · {delivery.join(", ")}
                   </p>
                 </div>
 
@@ -217,9 +224,25 @@ export default async function AdminServicesContentPage({ searchParams }: Service
                     </div>
                   </fieldset>
 
-                  <div>
-                    <label htmlFor={`order-${service.id}`} className="field-label">Order on the page</label>
-                    <input id={`order-${service.id}`} name="sortOrder" type="number" min={0} max={9999} defaultValue={service.sortOrder} className="input max-w-32" />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor={`duration-${service.id}`} className="field-label">Booking length (minutes)</label>
+                      <input
+                        id={`duration-${service.id}`}
+                        name="durationMinutes"
+                        type="number"
+                        min={15}
+                        max={240}
+                        step={15}
+                        defaultValue={service.durationMinutes}
+                        className="input max-w-40"
+                      />
+                      <p className="field-hint">Used by the live booking calendar.</p>
+                    </div>
+                    <div>
+                      <label htmlFor={`order-${service.id}`} className="field-label">Order on the page</label>
+                      <input id={`order-${service.id}`} name="sortOrder" type="number" min={0} max={9999} defaultValue={service.sortOrder} className="input max-w-32" />
+                    </div>
                   </div>
 
                   <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>

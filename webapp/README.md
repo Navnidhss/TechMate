@@ -72,6 +72,9 @@ All variables live in `.env` (git-ignored). `.env.example` documents every one.
 | `SMTP_USER` | Gmail address used to send notifications |
 | `SMTP_PASS` | Gmail **app password** (not the normal account password) |
 | `OWNER_EMAIL_FALLBACK` | Where enquiries go if the `contactEmail` setting is empty |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth credentials for two-way Calendar sync (optional — live booking works without them) |
+| `GOOGLE_CALENDAR_ID` | Calendar to sync (default `primary`) |
+| `NEXT_PUBLIC_SITE_URL` | Public URL used in the sitemap, emails and cancellation links (defaults to `http://localhost:3000`) |
 | `NEXT_PUBLIC_SITE_URL` | *(optional)* Public URL used in the sitemap — defaults to `http://localhost:3000` |
 
 ### Gmail app password (for enquiry emails)
@@ -104,8 +107,15 @@ What's in the portal:
   instant-save status dropdown.
 - **Jobs** — turn a booking into a tracked job with a `TM-XXXXXX` reference code. Customer update
   notes are shown on the tracking page and emailed to the customer; private notes stay internal.
-- **Content** — services & prices, FAQs, service areas, and site settings (including the contact email
-  that receives all enquiry notifications). Changes appear on the public site immediately.
+- **Appointments** — live bookings from the scheduler (real time slots), with cancel.
+- **Calendar** — connect Google Calendar (two-way), sync now, disconnect, and block days/partial days.
+- **Content** — services & prices (including booking length), FAQs, service areas, and site settings
+  (including the contact email that receives all enquiry notifications and live-booking availability).
+  Changes appear on the public site immediately.
+
+The public booking page (`/book`) is a five-step live scheduler: bookings appear in the owner's Google
+Calendar, and existing Google events block slots. The request-style form remains at `/book/request`.
+Google setup for the owner: [`docs/CALENDAR_SETUP.md`](docs/CALENDAR_SETUP.md).
 
 A non-technical owner's guide lives at [`docs/CONTENT_GUIDE.md`](docs/CONTENT_GUIDE.md).
 
@@ -152,8 +162,9 @@ webapp/
 
 ## Documentation
 
-- `docs/PHASE_1.md` … `docs/PHASE_4.md` — what was built in each phase, verification results, deviations.
+- `docs/PHASE_1.md` … `docs/PHASE_4.md`, `docs/PHASE_4_5.md` — what was built in each phase, verification results, deviations.
 - `docs/CONTENT_GUIDE.md` — the owner's no-code content editing guide.
+- `docs/CALENDAR_SETUP.md` — the owner's step-by-step Google Calendar setup.
 - `../HANDOFF.md` — project status, decisions and session log (project root).
 - `../IMPLEMENTATION_PLAN.md` — the authoritative specification (project root).
 

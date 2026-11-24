@@ -53,6 +53,9 @@ export const STATUS_LABELS: Record<string, string> = {
   "awaiting-parts": "Waiting on parts",
   "awaiting-customer": "Waiting on customer",
   connected: "Connected",
+  booked: "Booked",
+  "no-show": "No-show",
+  "cancelled-synced": "Cancelled (removed from Google)",
 };
 
 export const DELIVERY_LABELS: Record<string, string> = {
@@ -100,4 +103,15 @@ export const URGENCY_LABELS: Record<string, string> = {
   asap: "As soon as possible",
   today: "Today if possible",
   "this-week": "Sometime this week",
+};
+
+export const APPOINTMENT_STATUSES = ["booked", "cancelled", "completed", "no-show", "cancelled-synced"] as const;
+export const CANCELLED_BY = ["customer", "owner"] as const;
+
+export const APPOINTMENT_STATUS_LABELS: Record<string, string> = {
+  booked: "Booked",
+  cancelled: "Cancelled",
+  completed: "Completed",
+  "no-show": "No-show",
+  "cancelled-synced": "Cancelled (removed from Google)",
 };

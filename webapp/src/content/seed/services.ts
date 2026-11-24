@@ -16,6 +16,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $89",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "laptop",
+    durationMinutes: 90,
     sortOrder: 1,
   },
   {
@@ -29,6 +30,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $99",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "shield",
+    durationMinutes: 60,
     sortOrder: 2,
   },
   {
@@ -42,6 +44,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "Free assessment",
     priceNotes: "Free assessment. If we can't recover your data, there's no recovery fee.",
     icon: "drive",
+    durationMinutes: 30,
     sortOrder: 3,
   },
   {
@@ -55,6 +58,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "$79 per hour",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "headset",
+    durationMinutes: 60,
     sortOrder: 4,
   },
   {
@@ -68,6 +72,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $99 per month",
     priceNotes: "Month-to-month plans — no lock-in contracts.",
     icon: "briefcase",
+    durationMinutes: 60,
     sortOrder: 5,
   },
   {
@@ -81,6 +86,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $99",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "setup",
+    durationMinutes: 90,
     sortOrder: 6,
   },
   {
@@ -94,6 +100,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $109",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "wifi",
+    durationMinutes: 90,
     sortOrder: 7,
   },
   {
@@ -107,6 +114,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "From $79",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "devices",
+    durationMinutes: 60,
     sortOrder: 8,
   },
   {
@@ -120,6 +128,7 @@ export const seedServices: SeedService[] = [
     priceFrom: "Quoted per order",
     priceNotes: "We give you a fixed quote before any work begins — no surprises.",
     icon: "cart",
+    durationMinutes: 30,
     sortOrder: 9,
   },
 ];

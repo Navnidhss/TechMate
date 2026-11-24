@@ -8,6 +8,8 @@ export interface SeedService {
   priceFrom?: string;
   priceNotes?: string;
   icon?: string;
+  /** Slot length for the live scheduler, in minutes. */
+  durationMinutes?: number;
   sortOrder: number;
 }
 

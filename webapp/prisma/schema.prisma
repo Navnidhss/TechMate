@@ -13,17 +13,18 @@ model SiteSetting {
 }
 
 model Service {
-  id          Int     @id @default(autoincrement())
-  slug        String  @unique
-  name        String
-  shortDesc   String // card summary, <= 140 chars
-  description String // detail page body, plain paragraphs (\n\n separated)
-  delivery    String // CSV of: onsite, remote, workshop
-  priceFrom   String? // e.g. "From $89" — free text, customer-facing
-  priceNotes  String? // e.g. "Free quote before any work begins."
-  icon        String? // key into a small built-in icon map in code
-  sortOrder   Int     @default(0)
-  active      Boolean @default(true)
+  id              Int     @id @default(autoincrement())
+  slug            String  @unique
+  name            String
+  shortDesc       String // card summary, <= 140 chars
+  description     String // detail page body, plain paragraphs (\n\n separated)
+  delivery        String // CSV of: onsite, remote, workshop
+  priceFrom       String? // e.g. "From $89" — free text, customer-facing
+  priceNotes      String? // e.g. "Free quote before any work begins."
+  icon            String? // key into a small built-in icon map in code
+  durationMinutes Int     @default(60) // slot length for the live scheduler
+  sortOrder       Int     @default(0)
+  active          Boolean @default(true)
 }
 
 model Faq {
@@ -131,4 +132,54 @@ model AdminUser {
   passwordHash       String
   mustChangePassword Boolean  @default(true)
   createdAt          DateTime @default(now())
+}
+
+model Appointment {
+  id              Int      @id @default(autoincrement())
+  reference       String   @unique // TM-XXXXXX (same generator lib as jobs)
+  serviceSlug     String
+  serviceName     String // snapshot at booking time
+  delivery        String // onsite | remote | workshop
+  durationMinutes Int // snapshot at booking time
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  suburb          String
+  address         String?
+  notes           String
+  startsAt        DateTime
+  endsAt          DateTime
+  status          String   @default("booked") // booked | cancelled | completed | no-show | cancelled-synced
+  cancelledBy     String? // customer | owner | null
+  googleEventId   String?  @unique
+  cancelToken     String   @unique // 32 hex chars, in the customer cancel link
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ScheduleBlock {
+  id        Int      @id @default(autoincrement())
+  date      String // YYYY-MM-DD, Perth
+  allDay    Boolean  @default(true)
+  startTime String? // "HH:MM", when allDay = false
+  endTime   String? // "HH:MM", when allDay = false
+  reason    String   @default("") // e.g. "Public holiday", "Family day"
+  createdAt DateTime @default(now())
+}
+
+model CalendarConnection {
+  id                Int       @id @default(1)
+  googleEmail       String
+  accessTokenEnc    String // AES-256-GCM encrypted, see lib/crypto.ts
+  refreshTokenEnc   String // AES-256-GCM encrypted
+  accessTokenExpiry DateTime // expiry of the current access token
+  connectedAt       DateTime  @default(now())
+  lastSyncedAt      DateTime?
+}
+
+model CalendarCache {
+  id           String   @id @default("singleton")
+  busyJson     String // "[[isoStart,isoEnd],...]" merged busy intervals
+  eventIdsJson String // '["googleEventId",...]' for reconciliation
+  fetchedAt    DateTime
 }

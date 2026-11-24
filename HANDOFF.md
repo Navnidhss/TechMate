@@ -61,18 +61,21 @@ Full original service list (from kickoff): onsite / workshop / remote computer r
 
 ## 4. Current Status
 
-- **Phase:** 4 complete + mobile polish. **Phase 4.5 (live scheduling + Google Calendar) fully planned** — spec + kickoff prompt written, awaiting the implementing model (DeepSeek). Phase 5 (deployment) still off-limits until the owner authorises it.
-- **Last updated:** Session 10 (Phase 4.5 planning)
+- **Phase:** 4.5 complete in **local-only mode** — live scheduler, per-service durations, configurable availability, cancellations, admin appointments/calendar, and all Google Calendar integration code (two-way sync) are built and verified. **Two-way Google items await the owner's one-time Google Cloud setup** (guide: `webapp/docs/CALENDAR_SETUP.md`). Phase 5 (deployment) remains off-limits until the owner authorises it.
+- **Last updated:** Session 11 (Phase 4.5 implementation)
 - **What's done:**
   - **Phase 1:** `webapp/` scaffolded (Next.js 15, TypeScript strict, Tailwind 4, App Router, `src/`); Prisma schema + migration + SQLite `dev.db`; idempotent seed (9 services, 8 FAQs, 64 suburbs, 8 settings, starter admin `admin` / `TechMateAdmin2025!`); design system + logo; full public site (home, services + 9 detail pages, pricing, areas, about, FAQ, contact, privacy, 404); SEO (metadata, JSON-LD, sitemap, robots); `docs/PHASE_1.md`
   - **Phase 2:** `validation.ts` (all zod schemas + human messages), exact `rate-limit.ts` (5 per 10 min per action+IP), `email.ts` (Gmail SMTP, owner notification + customer acknowledgement, graceful skip if unconfigured), five public server actions, five forms with inline errors/pending/success states, shared form controls. Owner notification recipient comes from the editable `contactEmail` setting. `docs/PHASE_2.md`
   - **Phase 3:** signed-cookie auth (`session.ts` exact + Edge-safe verification for middleware), login/logout/forced first-login password change, protected `/admin/*`, admin shell + dashboard, five request tables with instant-save statuses, jobs module (create from booking, `TM-XXXXXX` references, customer update vs private notes, automatic customer update emails), and content editors for services, FAQs, service areas and settings — with `revalidatePath()` so public pages refresh immediately. `docs/PHASE_3.md` + `docs/CONTENT_GUIDE.md`
   - **Phase 4:** customer `/track` lookup (rate-limited, reference-validated, returns only status + customer note + last-updated; generic failures), accessibility pass (WCAG AA contrast fixes, labelled controls, Escape/focus handling, `aria-current`, descriptive links), Lighthouse 98 performance / 100 accessibility / 100 best-practices / 100 SEO on the home page, and the complete security checklist. `docs/PHASE_4.md`
+  - **Phase 4.5:** `/book` is now a five-step live scheduler (instant booking, per-service durations, configurable days/hours/horizon/notice/buffer, cancellation policy) while the request form lives on at `/book/request`. Two-way Google Calendar integration (create events, busy events block slots, deletion reconciliation), token-encrypted OAuth connection, customer cancel links, admin Appointment list with cancel, admin Calendar page (connect/sync/disconnect/day blocks), dashboard appointment card. `docs/PHASE_4_5.md` + `docs/CALENDAR_SETUP.md`; CONTENT_GUIDE updated.
   - Gmail SMTP verified (owner's app password stored only in git-ignored `.env`)
-  - Build + ESLint clean; all admin actions and public forms verified end-to-end via real database writes, real emails, redirects and page renders
+  - Build + ESLint clean; public booking/cancel flows, admin actions, race protection and emails verified end-to-end; 390px phone sweep clean; `/book` Lighthouse 98/100/100.
 - **What's NOT done:**
-  - Phase 5 deployment only — hosting, hosted database migration (SQLite → Postgres/Turso), domain and DNS. **Do not start until the owner explicitly authorises it.**
+  - **Two-way Google verification** — needs the owner to complete the Google Cloud setup (client ID/secret), connect, and run the four checks in `docs/CALENDAR_SETUP.md` §7. Everything works locally without it.
+  - **Phase 5 deployment** — hosting, hosted database migration (SQLite → Postgres/Turso), domain and DNS. **Do not start until the owner explicitly authorises it.**
 - **Blockers / open questions:**
+  - [ ] Owner completes Google Cloud setup + connects Google Calendar (then verify booking→event, Google→slots, delete→reconcile)
   - [ ] Final business name (TechMate is placeholder)
   - [ ] Domain purchase (needed for Phase 5)
   - [ ] AnyDesk ID / remote-support details for the site copy
@@ -92,7 +95,8 @@ npm run dev              # http://localhost:3000
 ```
 
 - Production check: `npm run build` then `npm start`.
-- Admin portal: <http://localhost:3000/admin> (starter `admin` / `TechMateAdmin2025!`; first login forces a change).
+- Admin portal: <http://localhost:3000/admin> (the owner has changed the starter password; the seeded `admin` / `TechMateAdmin2025!` is no longer live).
+- Live booking: `/book` (scheduler) and `/book/request` (request form). Google Calendar setup: `webapp/docs/CALENDAR_SETUP.md`; without credentials the scheduler uses local availability only.
 - Inspect the database: `npx prisma studio`.
 - Reset local data: `npx prisma migrate reset` then `npm run db:seed`.
 - `.env` holds local secrets (already created, git-ignored). Gmail SMTP is configured and verified; enquiry emails go to the `contactEmail` setting (currently `nsabharwal97@gmail.com`).
@@ -117,6 +121,8 @@ npm run dev              # http://localhost:3000
 | `Documents/TechMate/webapp/docs/PHASE_2.md` | Phase 2 report: forms, validation, rate limiting, email |
 | `Documents/TechMate/webapp/docs/PHASE_3.md` | Phase 3 report: auth, admin portal, jobs, content editors |
 | `Documents/TechMate/webapp/docs/PHASE_4.md` | Phase 4 report: tracking, accessibility, performance, security checklist |
+| `Documents/TechMate/webapp/docs/PHASE_4_5.md` | Phase 4.5 report: scheduler, Google sync, verification, deviations |
+| `Documents/TechMate/webapp/docs/CALENDAR_SETUP.md` | Owner's Google Cloud / Calendar setup guide |
 | `Documents/TechMate/webapp/docs/CONTENT_GUIDE.md` | Owner's no-code guide to running the site |
 
 ---
@@ -135,6 +141,7 @@ npm run dev              # http://localhost:3000
 | Session 8 | 4 | **Mobile responsiveness verified + two fixes applied.** Phone-viewport (390×844, touch emulation) sweep of 11 public pages: no horizontal overflow anywhere (pricing table swipes inside its scroll card by design — proven via touch-scroll test); hamburger menu, FAQ accordion, booking form and track lookup all work end-to-end on phone. **Fix 1:** form inputs were 14px → iOS Safari zooms the page on field focus; bumped `.input/.textarea/.select` to 16px in `globals.css` (re-verified 16px live). **Fix 2:** footer service/quick/contact links were sub-24px touch targets; added `py-1` padding (re-verified). Remaining sub-24px links are inline sentence links (WCAG 2.5.8 inline exception) and the keyboard-only skip link — acceptable. Lint + tsc clean. Note: `next dev` server holds the Prisma DLL on Windows — stop it before running `npm run build`. |
 | Session 9 | 4 | **Pricing phone zoom-out fixed (owner-reported, confirmed real).** The 640px-min pricing table expanded the mobile layout viewport → whole page renders zoomed out on phones (initial session-8 dismissal as an emulation artifact was wrong — owner reproduced it on a real device). Fix: `/pricing` now renders stacked per-service price cards below `sm` and the full table only at `sm+`; verified at 390px (layout viewport stays 390, doc scroll 390, 9 cards render, table hidden) and at 1280px (table + 9 rows intact, no overflow). Admin `DataTable` checked — uses `min-w-0` containment, no same bug. All other pages re-swept clean; lint + tsc clean. **Env-value audit:** grepped every project file + full git history for the real `SESSION_SECRET` / Gmail app-password values — none present anywhere in docs or history; only locations are the git-ignored `.env` and the verifier's chat log (owner advised to rotate the app password if that log is ever shared). |
 | Session 10 | 4.5 | **Phase 4.5 planned (owner confirmed all 8 decisions):** two-way Google Calendar (bookings create events; Google busy blocks slots; owner deleting an event frees the slot via reconciliation), instant booking, availability Mon–Sat 8–6 / 30-day horizon / 2h notice / 30m buffer (admin-editable), per-service durations (content-editor editable), cancellations both (customer token link + owner admin/Google), `/book` becomes the live scheduler while the request form survives at `/book/request`, Google account `nsabharwal97@gmail.com`, policy-note no-show protection. Wrote `IMPLEMENTATION_PLAN_4.5.md` (schema: Service.durationMinutes + Appointment/ScheduleBlock/CalendarConnection/CalendarCache; exact code for AES token encryption, Perth UTC+8 helpers, slot engine, fetch-based Google OAuth/REST; 4-step order + 10-item verification + 8 security requirements; zero new dependencies) and `START_PROMPT_4.5.md` (reading order, working rules incl. the Windows dev-server/Prisma-DLL lock, reporting format). No implementation started — awaiting handoff to DeepSeek. |
+| Session 11 | 4.5 | **Phase 4.5 complete (local-only verified; two-way pending owner setup).** Added `Service.durationMinutes` + 4 models (migration with sensible starting durations), 7 editable scheduling settings, Perth time helpers, AES-GCM token encryption, slot engine (working days, hours, horizon, notice, buffer, blocks, Google busy cache + reconciliation), public actions (`getSlots`, `bookAppointment` with transactional race protection, `cancelAppointment` with timing-safe tokens), five-step scheduler at `/book`, request form moved to `/book/request`, token-gated `/cancel/[reference]`, admin Appointments list + cancel, admin Calendar (Connect/Sync/Disconnect/day blocks), OAuth connect+callback routes, dashboard card, and appointment emails (owner, customer, cancellations, sync-removed). Verified: slot durations/buffer/notice/horizon/blocks/Sunday, duplicate + simultaneous booking race (exactly one winner), cancel page leaks nothing, wrong-token/replay rejection, slot reopened, emails sent, `/book/request` intact, 390px sweep on 9 routes with zero overflow, `/book` Lighthouse 98/100/100, admin actions + graceful not-configured/configured-not-connected/state-CSRF paths. Wrote `docs/PHASE_4_5.md` + `docs/CALENDAR_SETUP.md`; CONTENT_GUIDE and README updated. Two-way Google checks await owner credentials. |
 
 ---
 
@@ -312,8 +319,47 @@ npm run dev              # http://localhost:3000
 
 ---
 
-## 13. Next Step
+## 13. Phase 4.5 — Detailed Record (Complete, local-only verified)
 
-**Phase 4.5 — Live calendar scheduling + two-way Google Calendar.** Spec complete (`IMPLEMENTATION_PLAN_4.5.md`); hand `START_PROMPT_4.5.md` to the implementing model, or build it in this project's normal flow. The owner has a one-time Google Cloud setup to do before the two-way parts can be verified (guide will be written by the implementer as `docs/CALENDAR_SETUP.md`).
+**Goal:** real appointment slots on `/book`, auto-synced two-way with the owner's Google Calendar, cancellations both ways, with zero new dependencies.
 
-**Phase 5 — Deployment** (Vercel free tier or similar, hosted Postgres/Turso migration for SQLite, Gmail SMTP, domain DNS) — **do not start without explicit owner authorisation.** When authorised, write `docs/DEPLOYMENT.md` first (including the SQLite → hosted database migration steps, production env vars — including `NEXT_PUBLIC_SITE_URL` and the Google OAuth redirect URI for the real domain — and the F1/F2 pre-deployment fixes from `VERIFICATION_REPORT.md` §5).
+### 13.1 What was delivered
+
+| Area | Detail |
+|---|---|
+| Schema | `Service.durationMinutes` (migration sets 90/60/30 per service) + `Appointment`, `ScheduleBlock`, `CalendarConnection`, `CalendarCache`. Appointment stores reference, customer details, start/end, status, `cancelledBy`, `googleEventId`, unique `cancelToken`. |
+| Settings | `schedDays`, `schedStart`, `schedEnd`, `schedHorizonDays`, `schedNoticeHours`, `schedBufferMinutes`, `schedPolicyNote` — seeded, modelled, zod-validated and editable in admin with friendly labels. |
+| Engine | `time.ts` (Perth UTC+8 helpers), `schedule.ts` (`getBusy` with 5-minute cache, Google sync, deletion reconciliation, cached fallback on Google errors; `computeAvailableSlots` with working days, blocks, 30-min grid, per-service duration, notice, buffer, horizon, 40-slot cap). |
+| Public booking | `getSlots` (30/10min), `bookAppointment` (5/10min; slot re-checked inside a transaction; Google event created after commit and persisted; owner + customer emails), `cancelAppointment` (10/10min; timing-safe token; customer-only when `booked`; event deleted; both parties emailed). Five-step `BookingScheduler` at `/book`; request form preserved at `/book/request`; token-gated `/cancel/[reference]` showing only service/delivery/time/reference. |
+| Google | Dependency-free `google.ts` (OAuth URL/exchange/refresh, paginated event list incl. all-day, create/delete), `google-auth.ts` (auto-refresh within 60s, null in local-only mode), AES-256-GCM `crypto.ts`, OAuth routes with 10-minute state cookie at `/admin/calendar/connect` + `/admin/calendar/callback`, encrypted token storage, cache clearing on connect/disconnect. |
+| Admin | `/admin/appointments` (upcoming first, full details, sync indicator, cancel with confirm), `/admin/calendar` (connection status, sync now, disconnect, day/partial blocks CRUD, setup guidance, limitation note), dashboard “Appointments (7 days)” card, service duration field, scheduling settings section. All actions guarded by shared `requireAdmin()`. |
+| Emails | Owner new-booking, customer confirmation (with cancel link + policy), cancellation notices (other party + customer copy), sync-removed owner notice. |
+| Docs | `docs/PHASE_4_5.md`, `docs/CALENDAR_SETUP.md`, CONTENT_GUIDE (sections 4/7/8/11), README (features, env vars, docs). |
+
+### 13.2 Verification results
+
+- **Local-only (Google absent):** slots per duration; buffer removes neighbouring slots; duplicate bookings rejected; **two simultaneous bookings → exactly one winner** with “time was just taken”; notice/horizon/blocks/Sunday enforced; bookings persist with `TM-XXXXXX`; confirmation/cancellation emails sent; cancel page leaks no name/email/phone; wrong token generic; cancel frees the slot; replay rejected; `/book/request` still creates BookingRequests.
+- **Admin:** cancel (status/cancelledBy/email), block add/delete, duration save/restore, scheduling settings save/restore, force sync, all pages 200.
+- **Google graceful states:** not configured (“Local availability only” + setup text, Connect short-circuits); configured-not-connected (dummy env) shows Connect and redirects to Google with the right `redirect_uri`; callback with a wrong `state` is rejected before token exchange.
+- **Quality:** 390px CDP sweep of 9 public routes → `innerWidth = scrollWidth = 390` (no overflow); Lighthouse `/book` **98 performance / 100 accessibility / 100 SEO**; build + ESLint clean.
+- **Pending owner setup:** real connect, booking→Google event, Google events blocking slots, delete-in-Google reconciliation (items 7–10 of the phase checklist). Steps in `docs/CALENDAR_SETUP.md` §7.
+
+### 13.3 Decisions & deviations
+
+1. Google libs were written in Step 2 because the slot engine depends on them; admin/OAuth UI followed in Step 3.
+2. `requireAdmin()` moved to `lib/admin-auth.ts` so calendar admin actions share the identical guard (no behaviour change).
+3. Added a customer cancellation confirmation email (spec's “other party” email alone didn't cover “emails both parties”).
+4. OAuth connect/callback are route handlers (no admin chrome), same URLs, still middleware-protected.
+5. Onsite bookings require an address; horizon is re-checked inside `bookAppointment` as defence in depth.
+6. `GOOGLE_CALENDAR_ID` env respected, default `primary`.
+7. Documented correction: Google expires refresh tokens after ~7 days while the OAuth app is in “Testing”; the guide recommends publishing the app (unverified is fine for owner-only use).
+8. Time-moves in Google are not followed (documented): cancel & rebook.
+9. `NEXT_PUBLIC_SITE_URL` added to `.env.example` (closes verifier F1). F2 (`SESSION_SECRET` fail-fast) stays on the Phase 5 checklist.
+10. Admin appointment sync indicator shown in the table's status slot (status badge is already shown in the row title area).
+
+---
+
+## 14. Next Step
+
+1. **Owner:** complete `webapp/docs/CALENDAR_SETUP.md` (Google Cloud project, enable Calendar API, consent screen published, OAuth client with the correct redirect URI, `.env` credentials, Connect), then run the four checks in §7. Report results so the two-way items can be marked verified.
+2. **Phase 5 — Deployment** (hosting, SQLite → hosted Postgres/Turso, domain/DNS, production `NEXT_PUBLIC_SITE_URL` and Google redirect URI, plus verifier F2: fail fast on missing `SESSION_SECRET`). **Do not start without explicit owner authorisation.** Write `docs/DEPLOYMENT.md` first.

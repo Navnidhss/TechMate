@@ -109,6 +109,75 @@ export default async function AdminSettingsContentPage({ searchParams }: Setting
           />
         </section>
 
+        <section className="card space-y-4 p-5">
+          <div>
+            <h2 className="font-display text-base font-bold text-ink">Live booking availability</h2>
+            <p className="text-sm text-muted">
+              These control the time slots customers can book on the website. Times are Perth time.
+            </p>
+          </div>
+
+          <FormInput
+            name="schedDays"
+            label="Days you work"
+            defaultValue={settings.schedDays}
+            hint="Numbers 1–7 separated by commas, where 1 = Monday and 7 = Sunday. Default is 1,2,3,4,5,6 (Mon–Sat)."
+            required
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormInput
+              name="schedStart"
+              label="Earliest booking time"
+              type="time"
+              defaultValue={settings.schedStart}
+              hint="First slot of the day, e.g. 08:00."
+              required
+            />
+            <FormInput
+              name="schedEnd"
+              label="Latest booking time"
+              type="time"
+              defaultValue={settings.schedEnd}
+              hint="Jobs must finish by this time, e.g. 18:00."
+              required
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <FormInput
+              name="schedHorizonDays"
+              label="Book ahead (days)"
+              type="number"
+              defaultValue={settings.schedHorizonDays}
+              hint="How far ahead the calendar opens."
+              required
+            />
+            <FormInput
+              name="schedNoticeHours"
+              label="Minimum notice (hours)"
+              type="number"
+              defaultValue={settings.schedNoticeHours}
+              hint="No bookings closer than this to now."
+              required
+            />
+            <FormInput
+              name="schedBufferMinutes"
+              label="Break between jobs (minutes)"
+              type="number"
+              defaultValue={settings.schedBufferMinutes}
+              hint="Travel/reset time kept free after each job."
+              required
+            />
+          </div>
+          <FormTextarea
+            name="schedPolicyNote"
+            label="Cancellation policy shown at booking"
+            defaultValue={settings.schedPolicyNote}
+            rows={2}
+            hint="A friendly note under the booking confirmation — no aggressive no-show wording."
+            required
+          />
+        </section>
+
         <div className="flex items-center gap-3">
           <SubmitButton pendingLabel="Saving settings…">Save settings</SubmitButton>
           <p className="text-xs text-muted">Changes appear on the public site immediately.</p>

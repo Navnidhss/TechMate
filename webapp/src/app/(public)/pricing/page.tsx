@@ -49,7 +49,36 @@ export default async function PricingPage() {
 
       <section className="section">
         <div className="container-page">
-          <div className="overflow-hidden rounded-2xl border border-line bg-card">
+          {/* Phones: stacked cards — a 640px-wide table expands the layout viewport on
+              mobile browsers, which zooms the whole page out. Cards below sm instead. */}
+          <ul className="space-y-4 sm:hidden">
+            {services.map((service) => (
+              <li key={service.id} className="card p-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="font-semibold text-ink transition-colors hover:text-primary"
+                  >
+                    {service.name}
+                  </Link>
+                  <span className="font-semibold text-primary">{service.priceFrom ?? "Quoted per job"}</span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-body">
+                  {service.priceNotes ?? "Fixed quote before any work begins."}
+                </p>
+                <Link
+                  href={`/book?service=${service.slug}`}
+                  className="mt-3 inline-flex items-center gap-1 py-1 font-semibold text-primary transition-colors hover:text-primary-dark"
+                >
+                  Book<span className="sr-only"> {service.name}</span>
+                  <Icon name="arrow-right" size={14} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* sm and up: the full table */}
+          <div className="hidden overflow-hidden rounded-2xl border border-line bg-card sm:block">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <caption className="sr-only">TechMate service price guide</caption>

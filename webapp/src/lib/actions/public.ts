@@ -12,6 +12,7 @@ import {
   quoteSchema,
   recoverySchema,
   remoteSupportSchema,
+  trackReferenceSchema,
 } from "@/lib/validation";
 
 export interface ActionResult {
@@ -260,5 +261,46 @@ export async function submitRemoteSupport(formData: FormData): Promise<ActionRes
   return {
     ok: true,
     message: `Thanks ${firstName(data.name)} — we've got your remote support request and will be in touch, usually the same day.`,
+  };
+}
+
+export interface TrackResult {
+  ok: boolean;
+  error?: string;
+  fieldErrors?: Record<string, string>;
+  job?: {
+    reference: string;
+    status: string;
+    statusNote: string;
+    updatedAt: string;
+  };
+}
+
+/**
+ * Customer job lookup.
+ * Deliberately returns ONLY the status, the customer note and the last update
+ * time — never names, emails, phone numbers or private admin notes.
+ * Failed lookups are generic so the page can't be used to confirm a reference exists.
+ */
+export async function lookupJob(formData: FormData): Promise<TrackResult> {
+  if (!rateLimit(`track:${await getClientIp()}`)) {
+    return { ok: false, error: RATE_LIMIT_MESSAGE };
+  }
+
+  const parsed = trackReferenceSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return { ok: false, fieldErrors: fieldErrorsFrom(parsed.error) };
+
+  const job = await prisma.job.findUnique({
+    where: { reference: parsed.data.reference },
+    select: { reference: true, status: true, statusNote: true, updatedAt: true },
+  });
+
+  if (!job) {
+    return { ok: false, error: "We couldn't find that reference. Please check the code and try again." };
+  }
+
+  return {
+    ok: true,
+    job: { ...job, updatedAt: job.updatedAt.toISOString() },
   };
 }

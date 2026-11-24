@@ -67,7 +67,7 @@ export default function DataRecoveryPage() {
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon name={step.icon} size={20} />
                   </span>
-                  <span className="font-display text-2xl font-bold text-line">0{index + 1}</span>
+                  <span className="font-display text-2xl font-bold text-muted">0{index + 1}</span>
                 </div>
                 <h2 className="mt-4 font-display text-base font-bold text-ink">{step.title}</h2>
                 <p className="mt-1.5 text-sm leading-relaxed">{step.text}</p>

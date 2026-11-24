@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Icon } from "@/components/Icon";
 import { PageHero } from "@/components/PageHero";
+import { TrackForm } from "@/components/forms/TrackForm";
 import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
@@ -26,36 +27,16 @@ export default async function TrackPage() {
       <section className="section">
         <div className="container-page max-w-xl">
           <div className="card p-6 sm:p-8">
-            <label htmlFor="reference" className="field-label">
-              Your reference code
-            </label>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="reference"
-                name="reference"
-                placeholder="TM-ABC123"
-                className="input font-mono uppercase tracking-wider"
-                autoComplete="off"
-                disabled
-              />
-              <button type="button" className="btn-primary shrink-0" disabled>
-                Check status
-              </button>
-            </div>
-            <p className="field-hint">
-              Your code looks like <span className="font-mono">TM-</span> followed by six letters and numbers.
-            </p>
+            <TrackForm />
 
-            <div className="mt-6 rounded-xl border border-dashed border-line bg-surface p-5 text-sm leading-relaxed">
-              <p className="font-semibold text-ink">Status lookup is being connected next.</p>
-              <p className="mt-1">
-                Need an update now? Email{" "}
-                <a href={`mailto:${settings.contactEmail}`} className="font-semibold text-primary">
-                  {settings.contactEmail}
-                </a>{" "}
-                and we&apos;ll get back to you.
-              </p>
-            </div>
+            <p className="mt-6 border-t border-line pt-4 text-xs leading-relaxed text-muted">
+              Tracking shows only the job status and the latest update — never your name, contact details or private notes.
+              Need an update now? Email{" "}
+              <a href={`mailto:${settings.contactEmail}`} className="font-semibold text-primary">
+                {settings.contactEmail}
+              </a>
+              .
+            </p>
           </div>
 
           <p className="mt-6 text-center text-sm">

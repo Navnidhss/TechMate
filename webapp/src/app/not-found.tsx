@@ -16,7 +16,7 @@ export default function NotFound() {
 
       <div className="flex flex-1 items-center">
         <div className="container-page py-16 text-center">
-          <p className="font-display text-6xl font-bold text-primary/20">404</p>
+          <p className="font-display text-6xl font-bold text-primary/60">404</p>
           <h1 className="mt-2 font-display text-3xl font-bold text-ink sm:text-4xl">
             This page seems to have wandered off
           </h1>

@@ -61,23 +61,23 @@ Full original service list (from kickoff): onsite / workshop / remote computer r
 
 ## 4. Current Status
 
-- **Phase:** 3 complete — the admin portal (login, dashboard, request management, jobs with tracking codes, and the full content editor) is built and verified. **Phase 4 (customer tracking page + polish + security pass) not started — awaiting owner go-ahead.**
-- **Last updated:** Session 5 (implementation session 3)
+- **Phase:** 4 complete — customer job tracking, accessibility/performance polish and the full security pass are done and verified. **All four build phases are finished; Phase 5 (deployment) has not been started and is off-limits until the owner authorises it.**
+- **Last updated:** Session 6 (implementation session 4)
 - **What's done:**
   - **Phase 1:** `webapp/` scaffolded (Next.js 15, TypeScript strict, Tailwind 4, App Router, `src/`); Prisma schema + migration + SQLite `dev.db`; idempotent seed (9 services, 8 FAQs, 64 suburbs, 8 settings, starter admin `admin` / `TechMateAdmin2025!`); design system + logo; full public site (home, services + 9 detail pages, pricing, areas, about, FAQ, contact, privacy, 404); SEO (metadata, JSON-LD, sitemap, robots); `docs/PHASE_1.md`
   - **Phase 2:** `validation.ts` (all zod schemas + human messages), exact `rate-limit.ts` (5 per 10 min per action+IP), `email.ts` (Gmail SMTP, owner notification + customer acknowledgement, graceful skip if unconfigured), five public server actions, five forms with inline errors/pending/success states, shared form controls. Owner notification recipient comes from the editable `contactEmail` setting. `docs/PHASE_2.md`
   - **Phase 3:** signed-cookie auth (`session.ts` exact + Edge-safe verification for middleware), login/logout/forced first-login password change, protected `/admin/*`, admin shell + dashboard, five request tables with instant-save statuses, jobs module (create from booking, `TM-XXXXXX` references, customer update vs private notes, automatic customer update emails), and content editors for services, FAQs, service areas and settings — with `revalidatePath()` so public pages refresh immediately. `docs/PHASE_3.md` + `docs/CONTENT_GUIDE.md`
+  - **Phase 4:** customer `/track` lookup (rate-limited, reference-validated, returns only status + customer note + last-updated; generic failures), accessibility pass (WCAG AA contrast fixes, labelled controls, Escape/focus handling, `aria-current`, descriptive links), Lighthouse 98 performance / 100 accessibility / 100 best-practices / 100 SEO on the home page, and the complete security checklist. `docs/PHASE_4.md`
   - Gmail SMTP verified (owner's app password stored only in git-ignored `.env`)
-  - Build + ESLint clean; every admin action verified end-to-end via real database writes, real emails, redirects and page renders
+  - Build + ESLint clean; all admin actions and public forms verified end-to-end via real database writes, real emails, redirects and page renders
 - **What's NOT done:**
-  - Phase 4 `/track` customer lookup + accessibility/performance/security polish
-  - Phase 5 deployment — off-limits until the owner authorises it
+  - Phase 5 deployment only — hosting, hosted database migration (SQLite → Postgres/Turso), domain and DNS. **Do not start until the owner explicitly authorises it.**
 - **Blockers / open questions:**
   - [ ] Final business name (TechMate is placeholder)
-  - [ ] Domain purchase (deferred until ready to deploy)
+  - [ ] Domain purchase (needed for Phase 5)
   - [ ] AnyDesk ID / remote-support details for the site copy
   - [ ] ABN (must be displayed on an AU business site once available)
-  - [ ] Owner sign-off to start Phase 4
+  - [ ] Owner decision to begin Phase 5 (deployment)
 
 ---
 
@@ -113,6 +113,7 @@ npm run dev              # http://localhost:3000
 | `Documents/TechMate/webapp/docs/PHASE_1.md` | Phase 1 report: what was built, verification, deviations |
 | `Documents/TechMate/webapp/docs/PHASE_2.md` | Phase 2 report: forms, validation, rate limiting, email |
 | `Documents/TechMate/webapp/docs/PHASE_3.md` | Phase 3 report: auth, admin portal, jobs, content editors |
+| `Documents/TechMate/webapp/docs/PHASE_4.md` | Phase 4 report: tracking, accessibility, performance, security checklist |
 | `Documents/TechMate/webapp/docs/CONTENT_GUIDE.md` | Owner's no-code guide to running the site |
 
 ---
@@ -126,6 +127,7 @@ npm run dev              # http://localhost:3000
 | Session 3 | 1 | **Phase 1 complete.** Scaffolded Next.js 15 app in `webapp/`, configured Prisma 6 + SQLite, wrote and ran the idempotent seed (9 services, 8 FAQs, 64 suburbs, 8 settings, admin user), built the design system (teal/amber tokens, Sora + Inter), logo assets, public layout (header/footer), and all public pages incl. 9 service detail pages, pricing, areas, about, FAQ, contact, privacy and friendly 404. Added SEO (metadata, JSON-LD, sitemap, robots) and `docs/PHASE_1.md`. Verified: build + ESLint clean, every route 200, content proven to come from the DB. Form pages and `/track` are friendly placeholders until Phases 2 & 4. Awaiting go-ahead for Phase 2. |
 | Session 4 | 2 | **Phase 2 complete.** Added `validation.ts` (all zod schemas, human error messages), exact `rate-limit.ts`, `email.ts` (Gmail SMTP owner notification + customer acknowledgement, graceful skip when unconfigured) and five public server actions. Built all five forms (booking with service pre-select, suburb datalist and delivery/time radios; contact; quote; data recovery with enforced consent; remote support) plus shared form controls, inline field errors, pending and success states. Owner supplied a Gmail app password; SMTP verified. Verified end-to-end: real DB rows, real emails, invalid-input messages, rate limiting at 5/10 min, consent enforcement, and `contactEmail` setting change routing notifications to the new address. `docs/PHASE_2.md` written; build + ESLint clean. Awaiting go-ahead for Phase 3 (admin portal). |
 | Session 5 | 3 | **Phase 3 complete.** Built signed-cookie auth (`session.ts` exact + Edge-safe verification), middleware route protection, login/logout, forced first-login password change, admin shell/sidebar, dashboard, five request tables with instant-save statuses, jobs module (create from booking, `TM-XXXXXX` references, customer vs private notes, automatic update emails) and full content editors for services, FAQs, areas and settings with `revalidatePath()`. Verified end-to-end via real actions: unauthenticated redirects, generic login errors, forced password change, old/new password behaviour, status updates, job creation/update/emails, service edit/hide/delete-blocked, FAQ/area CRUD, settings persistence, and all admin pages rendering 200. Wrote `docs/PHASE_3.md` and `docs/CONTENT_GUIDE.md`; project committed and pushed to GitHub. Awaiting go-ahead for Phase 4. |
+| Session 6 | 4 | **Phase 4 complete.** Implemented `/track` (rate-limited `lookupJob` returning only reference, status, customer note and last-updated; generic failures) with the `TrackForm` UI; accessibility pass (WCAG AA contrast fixes, labels/aria, Escape + focus handling, descriptive link text); SEO link-text fixes. Lighthouse on a production build: home 98 performance, 100 accessibility, 100 best practices, 100 SEO; service page 98/100; `/track` 100 accessibility. Ran and recorded the full security checklist; all items pass. Build + ESLint clean. `docs/PHASE_4.md` written; all build phases complete. Phase 5 (deployment) awaits owner authorisation. |
 
 ---
 
@@ -267,3 +269,42 @@ npm run dev              # http://localhost:3000
 **Commits:** `phase3: admin portal, jobs and content editors`.
 
 
+
+---
+
+## 12. Phase 4 — Detailed Record (Complete)
+
+**Goal:** give customers a safe status lookup, then close out accessibility, performance and the full security checklist.
+
+### 12.1 What was delivered
+
+| Area | Detail |
+|---|---|
+| Tracking | `/track` now calls `lookupJob` (server action). Rate-limited 5/10 min per IP; reference validated (`TM-` + six characters, no I/O/0/1) and normalised to uppercase. The action selects only `reference`, `status`, `statusNote`, `updatedAt` — no customer details, no private notes. Unknown codes get one generic message. |
+| Tracking UI | `TrackForm` client component: labelled input, inline errors, pending state, `aria-live` result card with status badge, customer note and last-updated timestamp, plus a privacy explanation and lost-code path. |
+| Accessibility | Amber CTA reworked to dark text on amber (AA), success green darkened to `#047857` (AA), low-contrast decorative numbers adjusted, placeholders bumped to `text-muted`; disabled button styling; Escape closes the mobile menu and returns focus; `aria-current="page"` on active nav links; descriptive link text for screen readers; verified every control has a label, radio groups use fieldsets and errors are wired with `aria-describedby`/`aria-invalid`. |
+| Performance | Production first-load JS remains 103 kB shared / 106 kB on content pages; forms add their own small bundle. No new dependencies or images; self-hosted fonts; CSS-only hero glow. |
+| SEO | Descriptive links fix (home SEO 100); admin area sends `noindex, nofollow` from the layout as well as `robots.txt`. |
+
+### 12.2 Verification results
+
+- **Lighthouse 12 (production build, headless Edge):** home **98 performance / 100 accessibility / 100 best-practices / 100 SEO**; service detail page **98 performance / 100 accessibility**; `/track` **100 accessibility**.
+- **Tracking:** valid code returns status/customer note/time; response keys are exactly the four allowed fields; lowercase input normalises; malformed and unknown codes produce friendly generic errors; the 6th lookup in the window is rate-limited.
+- **Build / lint:** `npm run build` clean, ESLint clean.
+- **Security checklist:** all §11 items pass — public actions rate-limited and validated, bcrypt + forced password change, signed HttpOnly/SameSite/Secure cookie, `/admin` doubly protected, generic login and tracking failures, parameterised Prisma only, no committed secrets, consent enforced, all admin actions re-verify the session, admin pages noindexed.
+- Test job and all test data removed; database left with only seeded content and the starter admin.
+
+### 12.3 Decisions & deviations
+
+1. Lighthouse was run locally via `npx lighthouse` driving headless Edge — not added as a project dependency. Scores should be re-checked on the final host in Phase 5.
+2. Amber CTA colour treatment changed to dark-on-amber to meet WCAG AA; the darker hover keeps white text at ≈5:1.
+3. The rate limiter remains in-memory/per-process (per spec) — a restart clears the window.
+4. `/track` echoes the reference itself (needed so the customer can confirm what they searched) but nothing else.
+
+**Commits:** `phase4: customer tracking, accessibility and security pass`.
+
+---
+
+## 13. Next Step
+
+**Phase 5 — Deployment** (Vercel free tier or similar, hosted Postgres/Turso migration for SQLite, Gmail SMTP, domain DNS) — **do not start without explicit owner authorisation.** When authorised, write `docs/DEPLOYMENT.md` first (including the SQLite → hosted database migration steps and production env vars) and confirm the domain and business name.

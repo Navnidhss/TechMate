@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -7,6 +8,10 @@ import { COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 // Admin data must always be fresh (statuses, notes, content edits).
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const token = (await cookies()).get(COOKIE_NAME)?.value;

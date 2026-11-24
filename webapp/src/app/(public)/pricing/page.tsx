@@ -80,7 +80,7 @@ export default async function PricingPage() {
                           href={`/book?service=${service.slug}`}
                           className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-primary hover:text-primary-dark"
                         >
-                          Book
+                          Book<span className="sr-only"> {service.name}</span>
                           <Icon name="arrow-right" size={14} />
                         </Link>
                       </td>

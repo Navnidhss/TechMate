@@ -16,7 +16,7 @@
   --color-surface: #f8fafc; /* page background */
   --color-card: #ffffff;
   --color-line: #e2e8f0;
-  --color-success: #059669;
+  --color-success: #047857;
   --color-danger: #dc2626;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-sora), var(--font-inter), ui-sans-serif, sans-serif;
@@ -74,15 +74,16 @@
   .btn-primary,
   .btn-accent,
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-colors duration-150 sm:text-base;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base;
   }
 
   .btn-primary {
     @apply bg-primary text-white hover:bg-primary-dark;
   }
 
+  /* Amber with dark ink text — keeps the CTA warm while meeting WCAG AA contrast. */
   .btn-accent {
-    @apply bg-accent text-white hover:bg-accent-dark;
+    @apply bg-accent text-ink hover:bg-accent-dark hover:text-white;
   }
 
   .btn-outline {
@@ -114,7 +115,7 @@
   .input,
   .textarea,
   .select {
-    @apply w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none transition-colors placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20;
+    @apply w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none transition-colors placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20;
   }
 
   .textarea {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/Icon";
 
@@ -23,11 +23,25 @@ export interface SiteHeaderProps {
 export function SiteHeader({ phone }: SiteHeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   // Close the mobile menu whenever the route changes.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  // Escape closes the mobile menu and returns focus to the toggle button.
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
@@ -48,6 +62,7 @@ export function SiteHeader({ phone }: SiteHeaderProps) {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive(link.href)
                   ? "bg-primary/5 text-primary"
@@ -72,6 +87,7 @@ export function SiteHeader({ phone }: SiteHeaderProps) {
           </Link>
           <button
             type="button"
+            ref={menuButtonRef}
             onClick={() => setOpen((value) => !value)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-ink lg:hidden"
             aria-expanded={open}
@@ -90,6 +106,7 @@ export function SiteHeader({ phone }: SiteHeaderProps) {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
                 className={`rounded-lg px-3 py-2.5 text-sm font-medium ${
                   isActive(link.href) ? "bg-primary/5 text-primary" : "text-body"
                 }`}

@@ -51,13 +51,13 @@ export function ServiceCard({ service }: ServiceCardProps) {
           href={`/services/${service.slug}`}
           className="font-semibold text-primary transition-colors hover:text-primary-dark"
         >
-          Learn more
+          Learn more<span className="sr-only"> about {service.name}</span>
         </Link>
         <Link
           href={`/book?service=${service.slug}`}
           className="inline-flex items-center gap-1 font-semibold text-ink transition-colors hover:text-primary"
         >
-          Book this
+          Book this<span className="sr-only"> service — {service.name}</span>
           <Icon name="arrow-right" size={15} />
         </Link>
       </div>

@@ -66,3 +66,38 @@ export const DELIVERY_SHORT_LABELS: Record<string, string> = {
   remote: "Remote",
   workshop: "Workshop",
 };
+
+export const TIME_LABELS: Record<string, string> = {
+  morning: "Morning (8am–12pm)",
+  afternoon: "Afternoon (12pm–5pm)",
+  evening: "Evening (5pm–7pm)",
+  flexible: "Flexible",
+};
+
+export const BUDGET_LABELS: Record<string, string> = {
+  "under-500": "Under $500",
+  "500-1000": "$500 – $1,000",
+  "1000-2000": "$1,000 – $2,000",
+  "not-sure": "Not sure yet",
+};
+
+export const DEVICE_TYPE_LABELS: Record<string, string> = {
+  "desktop-pc": "Desktop computer",
+  laptop: "Laptop",
+  "external-drive": "External hard drive",
+  "usb-stick": "USB stick",
+  phone: "Phone or tablet",
+  other: "Something else",
+};
+
+export const IMPORTANCE_LABELS: Record<string, string> = {
+  critical: "Critical — really need these files back",
+  important: "Important — hard to replace",
+  "nice-to-have": "Nice to have",
+};
+
+export const URGENCY_LABELS: Record<string, string> = {
+  asap: "As soon as possible",
+  today: "Today if possible",
+  "this-week": "Sometime this week",
+};

@@ -174,3 +174,48 @@ export async function sendCustomerAcknowledgement(
     console.error(`[email] failed to send ${kind} acknowledgement:`, error);
   }
 }
+
+/** Tell the customer their job has an update. Callers fire-and-forget. */
+export async function sendJobUpdateEmail(
+  reference: string,
+  to: string,
+  name: string,
+  statusNote: string,
+): Promise<void> {
+  if (!isEmailConfigured()) {
+    console.warn(`[email] not configured — skipped job update for ${reference}`);
+    return;
+  }
+  if (!to) return;
+
+  const settings = await getSettings();
+  const firstName = name.split(" ")[0] || name;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const subject = `[TechMate] Update on your job ${reference}`;
+  const body = [
+    `Hi ${firstName},`,
+    "",
+    `There's an update on your job (${reference}):`,
+    "",
+    statusNote,
+    "",
+    `You can check this any time at ${baseUrl}/track using your reference code.`,
+    "",
+    `Questions? Just reply to this email, or call ${settings.contactPhone}.`,
+    "",
+    `— ${settings.businessName}`,
+  ].join("\n");
+
+  try {
+    await getTransporter().sendMail({
+      from: `"${settings.businessName}" <${process.env.SMTP_USER}>`,
+      to,
+      replyTo: settings.contactEmail,
+      subject,
+      text: body,
+    });
+    console.info(`[email] sent job update "${subject}" to ${to}`);
+  } catch (error) {
+    console.error(`[email] failed to send job update for ${reference}:`, error);
+  }
+}

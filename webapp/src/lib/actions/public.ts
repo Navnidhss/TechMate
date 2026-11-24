@@ -1,10 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
-
 import { prisma } from "@/lib/db";
 import { sendCustomerAcknowledgement, sendOwnerNotification } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request";
 import {
   bookingSchema,
   enquirySchema,
@@ -28,19 +27,12 @@ export interface ActionResult {
 const RATE_LIMIT_MESSAGE = "Too many requests. Please wait a few minutes.";
 const GENERIC_ERROR = "Something went wrong at our end. Please try again, or email us directly.";
 
-/** Best-effort client IP for rate limiting (proxy-aware, falls back to "local"). */
-async function clientIp(): Promise<string> {
-  const headerList = await headers();
-  const forwarded = headerList.get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "local";
-}
-
 function firstName(name: string): string {
   return name.trim().split(/\s+/)[0] || name;
 }
 
 export async function submitBooking(formData: FormData): Promise<ActionResult> {
-  if (!rateLimit(`booking:${await clientIp()}`)) {
+  if (!rateLimit(`booking:${await getClientIp()}`)) {
     return { ok: false, error: RATE_LIMIT_MESSAGE };
   }
 
@@ -97,7 +89,7 @@ export async function submitBooking(formData: FormData): Promise<ActionResult> {
 }
 
 export async function submitEnquiry(formData: FormData): Promise<ActionResult> {
-  if (!rateLimit(`enquiry:${await clientIp()}`)) {
+  if (!rateLimit(`enquiry:${await getClientIp()}`)) {
     return { ok: false, error: RATE_LIMIT_MESSAGE };
   }
 
@@ -139,7 +131,7 @@ export async function submitEnquiry(formData: FormData): Promise<ActionResult> {
 }
 
 export async function submitQuote(formData: FormData): Promise<ActionResult> {
-  if (!rateLimit(`quote:${await clientIp()}`)) {
+  if (!rateLimit(`quote:${await getClientIp()}`)) {
     return { ok: false, error: RATE_LIMIT_MESSAGE };
   }
 
@@ -181,7 +173,7 @@ export async function submitQuote(formData: FormData): Promise<ActionResult> {
 }
 
 export async function submitRecovery(formData: FormData): Promise<ActionResult> {
-  if (!rateLimit(`recovery:${await clientIp()}`)) {
+  if (!rateLimit(`recovery:${await getClientIp()}`)) {
     return { ok: false, error: RATE_LIMIT_MESSAGE };
   }
 
@@ -230,7 +222,7 @@ export async function submitRecovery(formData: FormData): Promise<ActionResult> 
 }
 
 export async function submitRemoteSupport(formData: FormData): Promise<ActionResult> {
-  if (!rateLimit(`remote:${await clientIp()}`)) {
+  if (!rateLimit(`remote:${await getClientIp()}`)) {
     return { ok: false, error: RATE_LIMIT_MESSAGE };
   }
 

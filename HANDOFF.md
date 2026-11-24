@@ -61,23 +61,23 @@ Full original service list (from kickoff): onsite / workshop / remote computer r
 
 ## 4. Current Status
 
-- **Phase:** 2 complete — all five lead-capture forms, server-side validation, rate limiting and email delivery are live and verified. **Phase 3 (admin portal) not started — awaiting owner go-ahead.**
-- **Last updated:** Session 4 (implementation session 2)
+- **Phase:** 3 complete — the admin portal (login, dashboard, request management, jobs with tracking codes, and the full content editor) is built and verified. **Phase 4 (customer tracking page + polish + security pass) not started — awaiting owner go-ahead.**
+- **Last updated:** Session 5 (implementation session 3)
 - **What's done:**
   - **Phase 1:** `webapp/` scaffolded (Next.js 15, TypeScript strict, Tailwind 4, App Router, `src/`); Prisma schema + migration + SQLite `dev.db`; idempotent seed (9 services, 8 FAQs, 64 suburbs, 8 settings, starter admin `admin` / `TechMateAdmin2025!`); design system + logo; full public site (home, services + 9 detail pages, pricing, areas, about, FAQ, contact, privacy, 404); SEO (metadata, JSON-LD, sitemap, robots); `docs/PHASE_1.md`
   - **Phase 2:** `validation.ts` (all zod schemas + human messages), exact `rate-limit.ts` (5 per 10 min per action+IP), `email.ts` (Gmail SMTP, owner notification + customer acknowledgement, graceful skip if unconfigured), five public server actions, five forms with inline errors/pending/success states, shared form controls. Owner notification recipient comes from the editable `contactEmail` setting. `docs/PHASE_2.md`
-  - Gmail SMTP verified working with the owner's app password (stored only in git-ignored `.env`)
-  - Build + ESLint clean; all forms tested end-to-end with real DB writes and real emails; rate limit, invalid input, consent enforcement and `contactEmail` setting change all verified
+  - **Phase 3:** signed-cookie auth (`session.ts` exact + Edge-safe verification for middleware), login/logout/forced first-login password change, protected `/admin/*`, admin shell + dashboard, five request tables with instant-save statuses, jobs module (create from booking, `TM-XXXXXX` references, customer update vs private notes, automatic customer update emails), and content editors for services, FAQs, service areas and settings — with `revalidatePath()` so public pages refresh immediately. `docs/PHASE_3.md` + `docs/CONTENT_GUIDE.md`
+  - Gmail SMTP verified (owner's app password stored only in git-ignored `.env`)
+  - Build + ESLint clean; every admin action verified end-to-end via real database writes, real emails, redirects and page renders
 - **What's NOT done:**
-  - Phase 3 admin portal (login, dashboard, data tables, jobs module, content editors) — `/admin/*` does not exist yet
-  - Phase 4 `/track` lookup + accessibility/security polish
+  - Phase 4 `/track` customer lookup + accessibility/performance/security polish
   - Phase 5 deployment — off-limits until the owner authorises it
 - **Blockers / open questions:**
   - [ ] Final business name (TechMate is placeholder)
   - [ ] Domain purchase (deferred until ready to deploy)
   - [ ] AnyDesk ID / remote-support details for the site copy
   - [ ] ABN (must be displayed on an AU business site once available)
-  - [ ] Owner sign-off to start Phase 3
+  - [ ] Owner sign-off to start Phase 4
 
 ---
 
@@ -92,6 +92,7 @@ npm run dev              # http://localhost:3000
 ```
 
 - Production check: `npm run build` then `npm start`.
+- Admin portal: <http://localhost:3000/admin> (starter `admin` / `TechMateAdmin2025!`; first login forces a change).
 - Inspect the database: `npx prisma studio`.
 - Reset local data: `npx prisma migrate reset` then `npm run db:seed`.
 - `.env` holds local secrets (already created, git-ignored). Gmail SMTP is configured and verified; enquiry emails go to the `contactEmail` setting (currently `nsabharwal97@gmail.com`).
@@ -111,6 +112,8 @@ npm run dev              # http://localhost:3000
 | `Documents/TechMate/webapp/README.md` | Setup, run, env vars, structure |
 | `Documents/TechMate/webapp/docs/PHASE_1.md` | Phase 1 report: what was built, verification, deviations |
 | `Documents/TechMate/webapp/docs/PHASE_2.md` | Phase 2 report: forms, validation, rate limiting, email |
+| `Documents/TechMate/webapp/docs/PHASE_3.md` | Phase 3 report: auth, admin portal, jobs, content editors |
+| `Documents/TechMate/webapp/docs/CONTENT_GUIDE.md` | Owner's no-code guide to running the site |
 
 ---
 
@@ -122,6 +125,7 @@ npm run dev              # http://localhost:3000
 | Session 2 | 0 | Created `IMPLEMENTATION_PLAN.md` (full code-level spec: stack, folder structure, Prisma schema, seed content, form/validation/email/auth specs, phase-by-phase verification checklists) and `START_PROMPT.md` (kickoff prompt with reading order, working rules, reporting format). Project ready to hand to the implementing model. |
 | Session 3 | 1 | **Phase 1 complete.** Scaffolded Next.js 15 app in `webapp/`, configured Prisma 6 + SQLite, wrote and ran the idempotent seed (9 services, 8 FAQs, 64 suburbs, 8 settings, admin user), built the design system (teal/amber tokens, Sora + Inter), logo assets, public layout (header/footer), and all public pages incl. 9 service detail pages, pricing, areas, about, FAQ, contact, privacy and friendly 404. Added SEO (metadata, JSON-LD, sitemap, robots) and `docs/PHASE_1.md`. Verified: build + ESLint clean, every route 200, content proven to come from the DB. Form pages and `/track` are friendly placeholders until Phases 2 & 4. Awaiting go-ahead for Phase 2. |
 | Session 4 | 2 | **Phase 2 complete.** Added `validation.ts` (all zod schemas, human error messages), exact `rate-limit.ts`, `email.ts` (Gmail SMTP owner notification + customer acknowledgement, graceful skip when unconfigured) and five public server actions. Built all five forms (booking with service pre-select, suburb datalist and delivery/time radios; contact; quote; data recovery with enforced consent; remote support) plus shared form controls, inline field errors, pending and success states. Owner supplied a Gmail app password; SMTP verified. Verified end-to-end: real DB rows, real emails, invalid-input messages, rate limiting at 5/10 min, consent enforcement, and `contactEmail` setting change routing notifications to the new address. `docs/PHASE_2.md` written; build + ESLint clean. Awaiting go-ahead for Phase 3 (admin portal). |
+| Session 5 | 3 | **Phase 3 complete.** Built signed-cookie auth (`session.ts` exact + Edge-safe verification), middleware route protection, login/logout, forced first-login password change, admin shell/sidebar, dashboard, five request tables with instant-save statuses, jobs module (create from booking, `TM-XXXXXX` references, customer vs private notes, automatic update emails) and full content editors for services, FAQs, areas and settings with `revalidatePath()`. Verified end-to-end via real actions: unauthenticated redirects, generic login errors, forced password change, old/new password behaviour, status updates, job creation/update/emails, service edit/hide/delete-blocked, FAQ/area CRUD, settings persistence, and all admin pages rendering 200. Wrote `docs/PHASE_3.md` and `docs/CONTENT_GUIDE.md`; project committed and pushed to GitHub. Awaiting go-ahead for Phase 4. |
 
 ---
 
@@ -218,4 +222,48 @@ npm run dev              # http://localhost:3000
 - **Remote:** `https://github.com/Navnidhss/TechMate` (branch `main`).
 - The repository root contains the planning docs (`HANDOFF.md`, `IMPLEMENTATION_PLAN.md`, `BUILD_PLAN.md`, `START_PROMPT.md`) and the app under `webapp/`.
 - `webapp/.env`, `webapp/prisma/dev.db`, `node_modules`, and `.next` are git-ignored and never pushed.
+- Remote history begins with the Phase 2 import commit; the detailed phase records in this file preserve what came before.
+
+---
+
+## 11. Phase 3 — Detailed Record (Complete)
+
+**Goal:** give the owner a secure, no-code admin portal covering every request, a jobs module with customer tracking codes, and a content editor for services, pricing, FAQs, suburbs and settings.
+
+### 11.1 What was delivered
+
+| Area | Detail |
+|---|---|
+| Session | `lib/session.ts` keeps the spec's exact HMAC-SHA256 signed token (`uid` + 12h expiry). `lib/session-edge.ts` mirrors the same check with Web Crypto for middleware (Edge doesn't support `crypto.createHmac`). Cookie is `httpOnly`, `sameSite=lax`, `secure` in production, 12h max age. |
+| Auth | `/admin/login` (generic errors, 5 attempts / 10 min per IP), first-login forced password change at `/admin/change-password` (current password verified, min 10 chars, must differ), POST-only `/admin/logout`. Middleware protects `/admin/*`; the portal layout double-checks the session and the pending password change. Every admin server action re-verifies the session. |
+| Shell | Auth-gated sidebar (Dashboard, Bookings, Enquiries, Quotes, Recoveries, Remote, Jobs; Content: Services, FAQ, Areas, Settings; Change password / View website / Log out), mobile horizontal nav. |
+| Dashboard | New-booking / new-enquiry / new-recovery / active-job counts and the five newest submissions across all forms, plus quick links. |
+| Request tables | Shared `DataTable`: timestamp, name/contact, summary, colour badge, instant-save status dropdown (server-action validated against the allowed status list), full-details expansion. Bookings add a **Create job** button or link to the existing job. |
+| Jobs | `lib/reference.ts` generates `TM-XXXXXX` codes (no I/O/0/1) with a 3-attempt uniqueness check. Create from booking → job created, booking confirmed. Jobs list has quick status changes; job detail separates **customer update** (shown on tracking + emailed, subject `[TechMate] Update on your job TM-XXXXXX`) from **private notes** (never exposed). Job update emails are fire-and-forget. |
+| Content editors | Services (add/edit/hide/delete, slug fixed after creation, delete blocked when bookings exist), FAQs (CRUD + order), service areas (add/remove, grouped by zone, duplicate-safe), settings (business name, tagline, ABN, contact email, phone, hours, workshop details, AnyDesk instructions; friendly explanations). All zod-validated, with success/error banners. |
+| Freshness | Every content save calls `revalidatePath()` (including `/services/[slug]`), so the statically generated service pages and all dynamic pages update immediately. |
+
+### 11.2 Verification results
+
+- Build and ESLint clean; all admin routes render 200 when authenticated.
+- Unauthenticated `/admin`, `/admin/bookings`, `/admin/jobs` and content editors all 307 to `/admin/login?next=…`; invalid cookie rejected.
+- Wrong password → generic "Incorrect username or password."; correct starter password → `/admin/change-password` (forced).
+- Wrong current password and reusing the old password both rejected with field errors; a valid change logs out the old password and logs in with the new one to `/admin`.
+- Status dropdowns persist (booking moved to `contacted`).
+- Creating a job produced a valid `TM-8G9UUS` reference and marked the booking confirmed; job updates persisted status, customer note and private note; quick status moved the job on; two customer update emails were accepted by SMTP.
+- Service edit/hide/restore worked; deleting a service with a linked booking was blocked; FAQ and area create/delete worked; settings saved (contact phone changed then restored).
+- All test records were deleted and the admin password reset to the temporary seed value with the first-login change still enforced.
+
+### 11.3 Decisions & deviations
+
+1. Portal pages live in the `(portal)` route group so the forced password-change redirect doesn't trap `/admin/change-password`; public URLs are unchanged.
+2. Edge-safe session verification (`session-edge.ts`) duplicates the HMAC logic for middleware only; both files warn to keep them in sync.
+3. `session.ts` gained a `?? ""` fallback for `SESSION_SECRET` purely to satisfy TypeScript strictness.
+4. Content feedback uses `?saved=` / `?error=` query params instead of client state, keeping the editors server-first.
+5. Extra admin components: `AdminPageHeader`, `AdminBanner`, `CreateJobButton`, `LoginForm`, `ChangePasswordForm`.
+6. Quick status changes on the jobs list email the customer their existing customer note.
+7. Service slugs are immutable after creation; deletion is replaced by hiding when bookings exist.
+
+**Commits:** `phase3: admin portal, jobs and content editors`.
+
 

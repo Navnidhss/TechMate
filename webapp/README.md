@@ -87,13 +87,27 @@ gracefully and logged, so nothing breaks.
 
 ## Admin portal
 
-The portal lives at `/admin`. A starter administrator is created by the seed:
+The portal lives at `/admin` (login at `/admin/login`). A starter administrator is created by the seed:
 
 - **Username:** `admin`
 - **Password:** `TechMateAdmin2025!`
 
-The first login forces a password change. Change the username/password before any real use, and
-never commit credentials.
+The first login forces a password change (minimum 10 characters, must differ). Sessions are signed,
+HTTP-only cookies valid for 12 hours; login attempts are rate-limited. Change the username/password
+before any real use, and never commit credentials.
+
+What's in the portal:
+
+- **Dashboard** — counts of new bookings, enquiries and recoveries, active jobs, and the latest five
+  submissions.
+- **Bookings / Enquiries / Quotes / Recoveries / Remote** — every request with full details and an
+  instant-save status dropdown.
+- **Jobs** — turn a booking into a tracked job with a `TM-XXXXXX` reference code. Customer update
+  notes are shown on the tracking page and emailed to the customer; private notes stay internal.
+- **Content** — services & prices, FAQs, service areas, and site settings (including the contact email
+  that receives all enquiry notifications). Changes appear on the public site immediately.
+
+A non-technical owner's guide lives at [`docs/CONTENT_GUIDE.md`](docs/CONTENT_GUIDE.md).
 
 ---
 
@@ -139,7 +153,7 @@ webapp/
 ## Documentation
 
 - `docs/PHASE_1.md` … `docs/PHASE_4.md` — what was built in each phase, verification results, deviations.
-- `docs/CONTENT_GUIDE.md` — the owner's no-code content editing guide (Phase 3).
+- `docs/CONTENT_GUIDE.md` — the owner's no-code content editing guide.
 - `../HANDOFF.md` — project status, decisions and session log (project root).
 - `../IMPLEMENTATION_PLAN.md` — the authoritative specification (project root).
 

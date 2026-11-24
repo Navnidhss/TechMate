@@ -5,6 +5,7 @@ import {
   DELIVERY_OPTIONS,
   DEVICE_TYPES,
   IMPORTANCE_OPTIONS,
+  JOB_STATUSES,
   TIME_OPTIONS,
   URGENCY_OPTIONS,
 } from "@/lib/statuses";
@@ -157,3 +158,87 @@ export function formDataToObject(formData: FormData): Record<string, string> {
   }
   return data;
 }
+
+/* ------------------------------------------------------------------
+   Admin schemas (server actions in lib/actions/admin.ts)
+   ------------------------------------------------------------------ */
+
+export const loginSchema = z.object({
+  username: z.string().trim().min(1, "Please enter your username"),
+  password: z.string().min(1, "Please enter your password"),
+});
+
+export const passwordChangeSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Please enter your current password"),
+    newPassword: z
+      .string()
+      .min(10, "Your new password needs to be at least 10 characters")
+      .max(200, "That password is too long"),
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Those passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export const jobUpdateSchema = z.object({
+  status: z.enum(JOB_STATUSES, { message: "Please choose a valid status" }),
+  statusNote: z
+    .string()
+    .trim()
+    .min(5, "Please write a short update the customer will see")
+    .max(1000, "That note is a little too long"),
+  adminNote: z.string().trim().max(2000, "That note is a little too long"),
+});
+
+export const serviceSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(2, "Please add a short web address name")
+    .max(60, "That's a little long")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens only"),
+  name: z.string().trim().min(2, "Please add the service name").max(80, "That name is a little too long"),
+  shortDesc: z
+    .string()
+    .trim()
+    .min(10, "Please add a short summary for the service cards")
+    .max(160, "Please keep the summary under 160 characters"),
+  description: z
+    .string()
+    .trim()
+    .min(50, "Please write a little more detail for the service page")
+    .max(8000, "That description is a little too long"),
+  priceFrom: z.string().trim().max(40, "That price is a little too long"),
+  priceNotes: z.string().trim().max(300, "That note is a little too long"),
+  icon: z.string().trim().max(40),
+  sortOrder: z.coerce.number().int().min(0).max(9999),
+});
+
+export const faqSchema = z.object({
+  question: z.string().trim().min(5, "Please add the question").max(200, "That question is a little too long"),
+  answer: z.string().trim().min(10, "Please add an answer").max(5000, "That answer is a little too long"),
+  sortOrder: z.coerce.number().int().min(0).max(9999),
+});
+
+export const areaSchema = z.object({
+  zone: z.string().trim().min(2, "Please add the zone name").max(60, "That zone name is a little too long"),
+  suburb: z.string().trim().min(2, "Please add the suburb").max(60, "That suburb name is a little too long"),
+});
+
+export const settingsSchema = z.object({
+  contactEmail: z
+    .string()
+    .trim()
+    .min(1, "Please add the contact email")
+    .max(120, "That email is a little too long")
+    .email("Please check the contact email address"),
+  contactPhone: z.string().trim().min(5, "Please add the contact phone number").max(30, "That phone number is a little long"),
+  businessName: z.string().trim().min(2, "Please add the business name").max(80, "That name is a little too long"),
+  tagline: z.string().trim().min(5, "Please add a short tagline").max(160, "That tagline is a little too long"),
+  tradingHours: z.string().trim().min(2, "Please add your trading hours").max(200, "That's a little too long"),
+  anydeskInfo: z.string().trim().min(5, "Please add the AnyDesk instructions").max(400, "That's a little too long"),
+  workshopAddress: z.string().trim().min(2, "Please add your workshop / drop-off details").max(300, "That's a little too long"),
+  abn: z.string().trim().max(30, "That ABN looks a little long"),
+});
